@@ -3,7 +3,8 @@
  */
 package org.example;
 
-import java.util.Date;
+import java.time.Instant;
+import java.util.Random;
 
 import com.google.gson.Gson;
 
@@ -13,11 +14,15 @@ public class App {
     public static void main(String[] args) throws InterruptedException {
         Jedis jedis = new Jedis();
         Gson gson = new Gson();
+        Random random = new Random();
         int index = 0;
         while (true) {
-            TestMessage message = new TestMessage(index, (new Date()).getTime(), 0);
+            TestMessage message = new TestMessage(
+                    index,
+                    Instant.now().toEpochMilli(),
+                    random.nextInt(1, 4));
             String json = gson.toJson(message);
-            jedis.rpush("channel", json);
+            jedis.rpush("test-message", json);
             System.out.println(json);
             index++;
             Thread.sleep(1000);
