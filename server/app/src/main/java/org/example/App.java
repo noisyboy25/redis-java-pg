@@ -5,16 +5,20 @@ package org.example;
 
 import java.util.Date;
 
+import com.google.gson.Gson;
+
 import redis.clients.jedis.Jedis;
 
 public class App {
     public static void main(String[] args) throws InterruptedException {
         Jedis jedis = new Jedis();
+        Gson gson = new Gson();
         int index = 0;
         while (true) {
-            String message = "{\"timestamp\":" + (new Date()).getTime() + ",\"index\":" + index + "}";
-            jedis.rpush("channel", message);
-            System.out.println(message);
+            TestMessage message = new TestMessage(index, (new Date()).getTime(), 0);
+            String json = gson.toJson(message);
+            jedis.rpush("channel", json);
+            System.out.println(json);
             index++;
             Thread.sleep(1000);
         }

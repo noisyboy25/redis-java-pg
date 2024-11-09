@@ -26,6 +26,8 @@ dependencies {
 
     // https://mvnrepository.com/artifact/redis.clients/jedis
     implementation("redis.clients:jedis:5.2.0")
+
+    implementation("com.google.code.gson:gson:2.11.0")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
