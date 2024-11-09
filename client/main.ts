@@ -1,26 +1,32 @@
 import { createClient } from 'npm:redis';
+import { RedisClientType } from 'npm:redis/client';
 
 type TestMessage = { index: number; timestamp: number; counter: number };
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const processMessage = async (redis: RedisClientType, message: TestMessage) => {
+  if (message.counter > 0) {
+    await sleep(1000);
+    redis.rPush(
+      'test-message',
+      JSON.stringify({ ...message, counter: message.counter - 1 })
+    );
+  } else {
+    console.log(message);
+  }
+};
+
 // Learn more at https://docs.deno.com/runtime/manual/examples/module_metadata#concepts
 if (import.meta.main) {
-  const client = createClient({
+  const redis = createClient({
     url: 'redis://localhost:6379',
   });
-  await client.connect();
+  await redis.connect();
   while (true) {
-    const payload = await client.blPop('test-message', 0);
+    const payload = await redis.blPop('test-message', 0);
     if (!payload) continue;
     const message: TestMessage = JSON.parse(payload.element);
-    if (message.counter <= 0) {
-      console.log(message);
-      continue;
-    }
-    setTimeout(() => {
-      client.rPush(
-        'test-message',
-        JSON.stringify({ ...message, counter: message.counter - 1 })
-      );
-    }, 1000);
+    processMessage(redis, message);
   }
 }
