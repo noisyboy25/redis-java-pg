@@ -13,7 +13,7 @@ const processMessage = async (redis: RedisClientType, message: TestMessage) => {
       JSON.stringify({ ...message, counter: message.counter - 1 })
     );
   } else {
-    console.log(message);
+    console.log({ message, time: Date.now() - message.timestamp });
   }
 };
 

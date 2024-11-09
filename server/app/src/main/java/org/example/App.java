@@ -25,7 +25,7 @@ public class App {
             jedis.rpush("test-message", json);
             System.out.println(json);
             index++;
-            Thread.sleep(1000);
+            Thread.sleep(200);
         }
     }
 }
